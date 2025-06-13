@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `Location` VARCHAR(191) NULL,
+    ADD COLUMN `address` VARCHAR(191) NULL,
+    ADD COLUMN `profession` VARCHAR(191) NULL,
+    ADD COLUMN `telephone` VARCHAR(191) NULL,
+    MODIFY `role` ENUM('ADMIN', 'COACHE', 'PATIENT', 'USER') NOT NULL DEFAULT 'USER';

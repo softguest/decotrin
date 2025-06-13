@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  COACHE
+  PATIENT
+  USER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+
+  profession    String?
+  Location      String?
+  telephone     String?
+  address       String?
+
+  bio           String?
+  
+  role          UserRole  @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  campaigns     Campaign[]
+  posts         Post[]
+}
+
+model Account {
+  id                 String   @id @default(uuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Campaign {
+  id          String   @id @default(uuid())
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    String
+  name        String
+  posts       Post[]
+  createdAt   DateTime @default(now())
+}
+
+model Post {
+  id              String    @id @default(uuid())
+  campaign        Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId      String
+  user            User?     @relation(fields: [userId], references: [id])
+  userId          String
+  content         String
+  platform        String
+  mediaUrl        String?
+  scheduledAt     DateTime
+  status          String
+  analytics       Json?
+  platformPostId  String?
+}
