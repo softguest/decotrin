@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'TraumaCareHub',
-  description: 'The Best Trauma Care Community',
+  title: 'DECOTRIN',
+  description: 'The Trauma Care Support Community',
 }
 
 export default function RootLayout({

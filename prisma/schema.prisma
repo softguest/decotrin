@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -15,7 +15,7 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String   @id @default(cuid()) @map("_id")
   name          String?
   email         String?   @unique
   emailVerified DateTime?
@@ -26,19 +26,19 @@ model User {
   Location      String?
   telephone     String?
   address       String?
-
   bio           String?
-  
+
   role          UserRole  @default(USER)
+
   accounts      Account[]
   sessions      Session[]
-  campaigns     Campaign[]
   posts         Post[]
 }
 
 model Account {
-  id                 String   @id @default(uuid())
+  id                 String   @id @default(cuid()) @map("_id")
   userId             String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   type               String
   provider           String
   providerAccountId  String
@@ -50,35 +50,22 @@ model Account {
   id_token           String?
   session_state      String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String   @id @default(uuid())
+  id           String       @id @default(cuid()) @map("_id")
   sessionToken String   @unique
   userId       String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id])
-}
-
-model Campaign {
-  id          String   @id @default(uuid())
-  author      User?    @relation(fields: [authorId], references: [id])
-  authorId    String
-  name        String
-  posts       Post[]
-  createdAt   DateTime @default(now())
 }
 
 model Post {
-  id              String    @id @default(uuid())
-  campaign        Campaign? @relation(fields: [campaignId], references: [id])
+  id              String   @id @default(cuid()) @map("_id")
   campaignId      String
-  user            User?     @relation(fields: [userId], references: [id])
   userId          String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   content         String
   platform        String
   mediaUrl        String?
